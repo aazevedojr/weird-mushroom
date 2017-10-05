@@ -59,7 +59,7 @@ User.all.each do |user|
     Review.create(
       rating: rand(5),
       feedback: Faker::HarryPotter.quote,
-      reviewer: user
+      reviewer: user,
       course: course
     )
   end
