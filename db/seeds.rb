@@ -1,7 +1,66 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+# Clean up:
+User.delete_all
+Challenge.delete_all
+Course.delete_all
+Review.delete_all
+
+# Me:
+User.create(
+  username: "gus",
+  email: "gus@weirdmushroom.net",
+  password: "gus"
+)
+
+# Users:
+10.times do
+  User.create(
+    username: Faker::Internet.user_name,
+    email: Faker::Internet.email,
+    password: "password"
+  )
+end
+
+#Challenges:
+Challenge.create(
+  theme: Faker::Job.key_skill,
+  guidelines: Faker::TwinPeaks.quote,
+  course_submissions_deadline: DateTime.now.next_day(7),
+  review_submissions_deadline: DateTime.now.next_day(14)
+  proposer: User.sample
+)
+Challenge.create(
+  theme: Faker::RockBand.name,
+  guidelines: Faker::Simpsons.quote,
+  course_submissions_deadline: DateTime.now.next_day(10)
+  review_submissions_deadline: DateTime.now.next_day(15)
+  proposer: User.sample
+)
+
+# Courses:
+User.all.each do |user|
+  Course.create(
+    bookmark: "0000-0000-0000-0000",
+    title: Faker::Book.title,
+    maker: user,
+    challenge: Challenge.first
+  )
+  Course.create(
+    bookmark: "0000-0000-0000-0000",
+    title: Faker::Pokemon.move,
+    maker: user,
+    challenge: Challenge.second
+  )
+end
+
+# Reviews:
+User.all.each do |user|
+  courses = Course.all.remove(user.courses)
+  courses.each do |course|
+    Review.create(
+      rating: rand(5),
+      feedback: Faker::HarryPotter.quote,
+      reviewer: user
+      course: course
+    )
+  end
+end
