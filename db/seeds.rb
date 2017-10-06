@@ -25,15 +25,15 @@ Challenge.create(
   theme: Faker::Job.key_skill,
   guidelines: Faker::TwinPeaks.quote,
   course_submissions_deadline: DateTime.now.next_day(7),
-  review_submissions_deadline: DateTime.now.next_day(14)
-  proposer: User.sample
+  review_submissions_deadline: DateTime.now.next_day(14),
+  proposer: User.all.sample
 )
 Challenge.create(
   theme: Faker::RockBand.name,
   guidelines: Faker::Simpsons.quote,
-  course_submissions_deadline: DateTime.now.next_day(10)
-  review_submissions_deadline: DateTime.now.next_day(15)
-  proposer: User.sample
+  course_submissions_deadline: DateTime.now.next_day(10),
+  review_submissions_deadline: DateTime.now.next_day(15),
+  proposer: User.all.sample
 )
 
 # Courses:
@@ -50,11 +50,13 @@ User.all.each do |user|
     maker: user,
     challenge: Challenge.second
   )
+  puts "Added two courses by #{user.username}."
 end
 
 # Reviews:
 User.all.each do |user|
-  courses = Course.all.remove(user.courses)
+  courses = Course.all
+  courses.delete(user.courses)
   courses.each do |course|
     Review.create(
       rating: rand(5),
