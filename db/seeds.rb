@@ -21,6 +21,10 @@ User.create(
 end
 
 #Challenges:
+def generate_bookmark
+  rand.to_s[2..11] + '-0000-' + rand.to_s[2..11] + '-' + rand.to_s[2..11]
+end
+
 Challenge.create(
   theme: Faker::Job.key_skill,
   guidelines: Faker::TwinPeaks.quote,
@@ -39,18 +43,17 @@ Challenge.create(
 # Courses:
 User.all.each do |user|
   Course.create(
-    bookmark: "0000-0000-0000-0000",
+    bookmark: generate_bookmark,
     title: Faker::Book.title,
     maker: user,
     challenge: Challenge.first
   )
   Course.create(
-    bookmark: "0000-0000-0000-0000",
+    bookmark: generate_bookmark,
     title: Faker::Pokemon.move,
     maker: user,
     challenge: Challenge.second
   )
-  puts "Added two courses by #{user.username}."
 end
 
 # Reviews:
