@@ -1,17 +1,7 @@
 # Helpers:
 
 def generate_bookmark
-  rand.to_s[2..11] + '-0000-' + rand.to_s[2..11] + '-' + rand.to_s[2..11]
-end
-
-def validate(instance)
-  if instance.save
-    puts "Created #{instance.class}: #{instance.id}"
-  else
-    instance.errors.messages.each do |error_message|
-      puts error_message
-    end
-  end
+  rand.to_s[2..5] + '-0000-' + rand.to_s[2..5] + '-' + rand.to_s[2..5]
 end
 
 # Clean up:
@@ -40,21 +30,21 @@ puts "Created user: GUS"
 # Users:
 
 10.times do
-  user = User.new(
+  user = User.create(
     username: Faker::Internet.user_name,
     email: Faker::Internet.email,
     password: "password"
   )
-  validate(user)
+  puts "Created user: #{user.username.upcase}"
 end
 
 users = User.all
 
-#Challenges:
+# Challenges:
 
 puts "Creating challenges..."
 
-chal_1 = Challenge.new(
+chal_1 = Challenge.create(
   theme: Faker::Job.key_skill,
   guidelines: Faker::TwinPeaks.quote,
   course_submissions_deadline: DateTime.now.next_day(7),
@@ -62,7 +52,7 @@ chal_1 = Challenge.new(
   proposer: users.sample
 )
 
-chal_2 = Challenge.new(
+chal_2 = Challenge.create(
   theme: Faker::RockBand.name,
   guidelines: Faker::Simpsons.quote,
   course_submissions_deadline: DateTime.now.next_day(10),
@@ -70,31 +60,29 @@ chal_2 = Challenge.new(
   proposer: users.sample
 )
 
-validate(chal_1)
-validate(chal_2)
+puts "#{chal_1.theme}, by #{chal_1.proposer.username}"
+puts "#{chal_2.theme}, by #{chal_2.proposer.username}"
 
 # Courses:
 
 puts "Creating courses..."
 
 users.each do |user|
-  cour_1 = Course.new(
+  cour_1 = Course.create(
     bookmark: generate_bookmark,
     title: Faker::Book.title,
     maker: user,
     challenge: Challenge.first
   )
 
-  cour_2 = Course.new(
+  cour_2 = Course.create(
     bookmark: generate_bookmark,
     title: Faker::Pokemon.move,
     maker: user,
     challenge: Challenge.second
   )
-
-  validate(cour_1)
-  validate(cour_2)
-
+  puts "#{cour_1.title}, by #{cour_1.maker.username}, for #{cour_1.challenge.theme}"
+  puts "#{cour_2.title}, by #{cour_2.maker.username}, for #{cour_2.challenge.theme}"
 end
 
 courses = Course.all
@@ -106,13 +94,18 @@ puts "Creating reviews..."
 users.each do |user|
   courses.each do |course|
     if course.maker != user
-      review = Review.new(
-        rating: rand(5),
+      Review.create(
+        rating: rand(5) + 1,
         feedback: Faker::HarryPotter.quote,
         reviewer: user,
         course: course
       )
-      validate(review)
     end
+  end
+  puts "#{user.username.upcase}:"
+  user.reviews.each do |review|
+    puts review.course.title
+    puts '☆' * review.rating
+    puts review.feedback
   end
 end
